@@ -1,0 +1,11 @@
+POST http://localhost:8080/evaluate
+Content-Type: application/json
+
+{
+  "data": [
+    { "login": "user1", "email":  "user1@domain.priv" },
+    { "login": "user2", "email":  "user2@domain.priv" }
+  ],
+  "expression": "[ .[] | { \"value\": .login, \"label\": .email} ]"
+}
+

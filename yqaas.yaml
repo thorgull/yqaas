@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: YQ as a service
+  description: YQ as a service
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /evaluate:
+    post:
+      summary: Evaluate expression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expression:
+                  type: string
+                data: {}
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema: {}
+        404:
+          description: No result
+
