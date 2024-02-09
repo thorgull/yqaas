@@ -1,3 +1,5 @@
+[![CI](https://github.com/thorgull/yqaas/actions/workflows/build-latest-on-main-push.yml/badge.svg)](https://github.com/thorgull/yqaas/actions/workflows/build-latest-on-main-push.yml)
+
 # Build and run
 
 ### Build docker image
