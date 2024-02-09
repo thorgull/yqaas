@@ -19,6 +19,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/thorgull/yqaas/gen/api"
 	"github.com/thorgull/yqaas/impl"
@@ -29,19 +30,20 @@ import (
 func main() {
 	metrics := flag.Bool("prometheus", false, "Enabled /metrics endpoint")
 	probes := flag.Bool("probes", false, "Enable /health/* endpoints")
+	port := flag.Int("port", 8080, "Configure port")
 	flag.Parse()
-	log.Printf("Server started")
+	log.Printf("Server starting...")
 
 	DefaultApiService := impl.NewDefaultAPIService()
 	DefaultApiController := api.NewDefaultAPIController(DefaultApiService)
 
 	router := api.NewRouter(DefaultApiController)
 	if *metrics {
-		log.Printf("-- Enable /metrics endpoint")
+		log.Printf("[✔️] Enable /metrics endpoint")
 		router.Handle("/metrics", promhttp.Handler())
 	}
 	if *probes {
-		log.Printf("-- Enable /health/* endpoints")
+		log.Printf("[✔️] Enable /health/* endpoints")
 		respondNoContent := func(writer http.ResponseWriter, request *http.Request) {
 			writer.WriteHeader(http.StatusNoContent)
 		}
@@ -49,5 +51,6 @@ func main() {
 		router.HandleFunc("/health/ready", respondNoContent)
 	}
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Printf("Listening on %d", *port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), router))
 }
