@@ -1,10 +1,8 @@
 [![Build docker image](https://github.com/thorgull/yqaas/actions/workflows/build-latest-on-main-push.yml/badge.svg)](https://github.com/thorgull/yqaas/actions/workflows/build-latest-on-main-push.yml)
 [![Release Chart](https://github.com/thorgull/yqaas/actions/workflows/release-helm-chart.yml/badge.svg?branch=main)](https://github.com/thorgull/yqaas/actions/workflows/release-helm-chart.yml)
-
-[![Helm Chart](https://img.shields.io/github/v/release/thorgull/yqaas?label=helm%20release)](https://github.com/thorgull/yqaas/releases)
-
-![GitHub License](https://img.shields.io/github/license/thorgull/yqaas)
-![Go version](https://img.shields.io/github/go-mod/go-version/thorgull/yqaas)
+[![Helm Chart](https://img.shields.io/github/v/release/thorgull/yqaas?label=helm%20release&logo=helm)](https://github.com/thorgull/yqaas/releases)
+![Go version](https://img.shields.io/github/go-mod/go-version/thorgull/yqaas?logo=go)
+[![GitHub License](https://img.shields.io/github/license/thorgull/yqaas)](https://github.com/thorgull/yqaas/blob/main/LICENSE)
 
 
 
