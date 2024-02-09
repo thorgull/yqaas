@@ -1,4 +1,4 @@
-POST http://localhost:8080/evaluate
+POST {{baseUrl}}/evaluate
 Content-Type: application/json
 
 {

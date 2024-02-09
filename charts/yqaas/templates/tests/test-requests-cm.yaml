@@ -1,0 +1,17 @@
+{{ if .Values.tests.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "yqaas.fullname" . }}-test-requests"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+data:
+  http-client.env.json: |-
+    {
+      "helm_tests": {
+        "baseUrl": "http://{{ include "yqaas.fullname" . }}:{{ .Values.service.port }}"
+      }
+    }
+  {{ (.Files.Glob "test_files/*.http").AsConfig | nindent 2}}
+{{ end -}}

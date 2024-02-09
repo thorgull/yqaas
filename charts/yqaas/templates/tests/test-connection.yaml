@@ -1,0 +1,21 @@
+{{ if .Values.tests.enabled -}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "yqaas.fullname" . }}-test-connection"
+  labels:
+    {{- include "yqaas.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  containers:
+    - name: curl
+      image: {{ index .Values.tests.images "curl" | quote}}
+      args: [
+        '{{ include "yqaas.fullname" . }}:{{ .Values.service.port }}/evaluate',
+        '-d', '{ "expression": ".", "data": {} }',
+        '-fv'
+      ]
+  restartPolicy: Never
+{{ end -}}

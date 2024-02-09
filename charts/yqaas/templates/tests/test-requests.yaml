@@ -1,0 +1,30 @@
+{{ if .Values.tests.enabled -}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "yqaas.fullname" . }}-test-requests"
+  labels:
+    {{- include "yqaas.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  containers:
+    - name: curl
+      image: {{ index .Values.tests.images "intellij-http-client" | quote}}
+      args: [
+        {{ range $name, $_ := (.Files.Glob "test_files/*.http") -}}
+          {{ $name | base | quote | printf "%s, "}}
+        {{ end }}
+        '--env-file', 'http-client.env.json',
+        '--env', 'helm_tests'
+        ]
+      volumeMounts:
+        - mountPath: /workdir
+          name: workdir
+  volumes:
+    - name: workdir
+      configMap:
+        name: "{{ include "yqaas.fullname" . }}-test-requests"
+  restartPolicy: Never
+{{ end -}}
