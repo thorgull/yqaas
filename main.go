@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
+	"flag"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/thorgull/yqaas/gen/api"
 	"github.com/thorgull/yqaas/impl"
@@ -26,13 +27,18 @@ import (
 )
 
 func main() {
+	metrics := flag.Bool("prometheus", false, "Enabled /metrics endpoint")
+	flag.Parse()
 	log.Printf("Server started")
 
 	DefaultApiService := impl.NewDefaultAPIService()
 	DefaultApiController := api.NewDefaultAPIController(DefaultApiService)
 
 	router := api.NewRouter(DefaultApiController)
-	router.Handle("/metrics", promhttp.Handler())
+	if *metrics {
+		log.Printf("-- Enable /metrics endpoint")
+		router.Handle("/metrics", promhttp.Handler())
+	}
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
