@@ -28,6 +28,7 @@ import (
 
 func main() {
 	metrics := flag.Bool("prometheus", false, "Enabled /metrics endpoint")
+	probes := flag.Bool("probes", false, "Enable /health/* endpoints")
 	flag.Parse()
 	log.Printf("Server started")
 
@@ -38,6 +39,14 @@ func main() {
 	if *metrics {
 		log.Printf("-- Enable /metrics endpoint")
 		router.Handle("/metrics", promhttp.Handler())
+	}
+	if *probes {
+		log.Printf("-- Enable /health/* endpoints")
+		respondNoContent := func(writer http.ResponseWriter, request *http.Request) {
+			writer.WriteHeader(http.StatusNoContent)
+		}
+		router.HandleFunc("/health/live", respondNoContent)
+		router.HandleFunc("/health/ready", respondNoContent)
 	}
 
 	log.Fatal(http.ListenAndServe(":8080", router))
