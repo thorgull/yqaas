@@ -23,6 +23,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/thorgull/yqaas/gen/api"
 	"github.com/thorgull/yqaas/impl"
+	"gopkg.in/op/go-logging.v1"
 	"log"
 	"net/http"
 )
@@ -31,6 +32,7 @@ func main() {
 	metrics := flag.Bool("prometheus", false, "Enabled /metrics endpoint")
 	probes := flag.Bool("probes", false, "Enable /health/* endpoints")
 	port := flag.Int("port", 8080, "Configure port")
+	verbose := flag.Bool("verbose", false, "Show debug logs")
 	flag.Parse()
 	log.Printf("Server starting...")
 
@@ -49,6 +51,12 @@ func main() {
 		}
 		router.HandleFunc("/health/live", respondNoContent)
 		router.HandleFunc("/health/ready", respondNoContent)
+	}
+
+	if *verbose {
+		logging.SetLevel(logging.DEBUG, "")
+	} else {
+		logging.SetLevel(logging.WARNING, "")
 	}
 
 	log.Printf("Listening on %d", *port)
