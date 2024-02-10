@@ -95,6 +95,7 @@ func main() {
 		if err != nil {
 			writer.WriteHeader(500)
 		} else {
+			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(200)
 			_, err = writer.Write(bs)
 		}
