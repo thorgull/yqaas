@@ -33,6 +33,40 @@ import (
 )
 
 var log = logging.MustGetLogger("yqaas")
+
+func findYQVersion() (string, bool) {
+	bi, ok := debug.ReadBuildInfo()
+	if !ok {
+		log.Warningf("can not dertermine the version of the yq library, no build info available")
+		return "", false
+	}
+	for _, bi := range bi.Deps {
+		if strings.HasPrefix(bi.Path, "github.com/mikefarah/yq") {
+			return bi.Version, true
+		}
+	}
+	log.Warningf("can not dertermine the version of the yq library, module github.com/mikefarah/yq/* not found")
+	return "", false
+}
+
+func getVersionInfo() map[string]string {
+	var data = make(map[string]string)
+	if yqVersion, ok := findYQVersion(); ok {
+		data["yq"] = yqVersion
+	}
+	return data
+}
+
+type buildInfo struct {
+	Versions map[string]string `json:"versions"`
+}
+
+func getBuildInfo() buildInfo {
+	return buildInfo{
+		Versions: getVersionInfo(),
+	}
+}
+
 func main() {
 	metrics := flag.Bool("prometheus", false, "Enabled /metrics endpoint")
 	probes := flag.Bool("probes", false, "Enable /health/* endpoints")
@@ -53,6 +87,19 @@ func main() {
 	DefaultApiController := api.NewDefaultAPIController(DefaultApiService)
 
 	router := api.NewRouter(DefaultApiController)
+
+	log.Info("[✔️] Enable /info endpoint")
+	buildInfoData := getBuildInfo()
+	router.HandleFunc("/buildInfo", func(writer http.ResponseWriter, request *http.Request) {
+		bs, err := json.Marshal(buildInfoData)
+		if err != nil {
+			writer.WriteHeader(500)
+		} else {
+			writer.WriteHeader(200)
+			_, err = writer.Write(bs)
+		}
+	})
+
 	if *metrics {
 		log.Info("[✔️] Enable /metrics endpoint")
 		router.Handle("/metrics", promhttp.Handler())
