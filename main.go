@@ -18,16 +18,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/thorgull/yqaas/gen/api"
 	"github.com/thorgull/yqaas/impl"
 	"gopkg.in/op/go-logging.v1"
-	"log"
+	"runtime/debug"
+	"strings"
+
+	//"log"
 	"net/http"
 )
 
+var log = logging.MustGetLogger("yqaas")
 func main() {
 	metrics := flag.Bool("prometheus", false, "Enabled /metrics endpoint")
 	probes := flag.Bool("probes", false, "Enable /health/* endpoints")
@@ -35,18 +40,25 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Show debug logs")
 	openapi := flag.Bool("openapi", false, "Enable /openapi endpoint")
 	flag.Parse()
-	log.Printf("Server starting...")
+
+	if *verbose {
+		logging.SetLevel(logging.DEBUG, "")
+	} else {
+		logging.SetLevel(logging.INFO, "")
+	}
+
+	log.Info("Server starting...")
 
 	DefaultApiService := impl.NewDefaultAPIService()
 	DefaultApiController := api.NewDefaultAPIController(DefaultApiService)
 
 	router := api.NewRouter(DefaultApiController)
 	if *metrics {
-		log.Printf("[✔️] Enable /metrics endpoint")
+		log.Info("[✔️] Enable /metrics endpoint")
 		router.Handle("/metrics", promhttp.Handler())
 	}
 	if *probes {
-		log.Printf("[✔️] Enable /health/* endpoints")
+		log.Info("[✔️] Enable /health/* endpoints")
 		respondNoContent := func(writer http.ResponseWriter, request *http.Request) {
 			writer.WriteHeader(http.StatusNoContent)
 		}
@@ -54,19 +66,13 @@ func main() {
 		router.HandleFunc("/health/ready", respondNoContent)
 	}
 	if *openapi {
-		log.Printf("[✔️] Enable /openapi endpoint")
+		log.Info("[✔️] Enable /openapi endpoint")
 
 		router.HandleFunc("/openapi", func(writer http.ResponseWriter, request *http.Request) {
 			http.ServeFile(writer, request, "yqaas.yaml")
 		})
 	}
 
-	if *verbose {
-		logging.SetLevel(logging.DEBUG, "")
-	} else {
-		logging.SetLevel(logging.WARNING, "")
-	}
-
-	log.Printf("Listening on %d", *port)
+	log.Infof("Listening on %d", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), router))
 }
