@@ -1,7 +1,6 @@
 ###
 GET {{baseUrl}}/buildInfo
 
-
 > {%
     client.test("Request successfully", function () {
         client.assert(response.status == 200, "Response status is not 200")
@@ -10,4 +9,8 @@ GET {{baseUrl}}/buildInfo
         var type = response.contentType.mimeType;
         client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
     });
+    client.test("Check request body", function () {
+        client.assert(response.body.hasOwnProperty("versions"), "should have a versions property")
+        client.assert(response.body.versions.hasOwnProperty("yq"), "version of yq is available")
+    })
 %}
