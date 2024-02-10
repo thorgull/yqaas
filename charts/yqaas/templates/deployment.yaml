@@ -43,6 +43,9 @@ spec:
             {{- if .Values.debug }}
             - "-verbose"
             {{- end }}
+            {{- if .Values.openapi.expose }}
+            - "-openapi"
+            {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

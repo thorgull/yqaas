@@ -5,6 +5,8 @@
 metrics:
   enabled: false
 debug: false
+openapi:
+  expose: false
 
 tests:
   enabled: true
