@@ -33,5 +33,6 @@ LABEL org.opencontainers.image.title="YQ As A Service"
 COPY --from=ghcr.io/jqlang/jq /jq ./
 
 COPY --from=build /go/src/yqaas ./
+COPY yqaas.yaml ./
 EXPOSE 8080/tcp
 ENTRYPOINT ["./yqaas"]
