@@ -33,6 +33,7 @@ func main() {
 	probes := flag.Bool("probes", false, "Enable /health/* endpoints")
 	port := flag.Int("port", 8080, "Configure port")
 	verbose := flag.Bool("verbose", false, "Show debug logs")
+	openapi := flag.Bool("openapi", false, "Enable /openapi endpoint")
 	flag.Parse()
 	log.Printf("Server starting...")
 
@@ -51,6 +52,13 @@ func main() {
 		}
 		router.HandleFunc("/health/live", respondNoContent)
 		router.HandleFunc("/health/ready", respondNoContent)
+	}
+	if *openapi {
+		log.Printf("[✔️] Enable /openapi endpoint")
+
+		router.HandleFunc("/openapi", func(writer http.ResponseWriter, request *http.Request) {
+			http.ServeFile(writer, request, "yqaas.yaml")
+		})
 	}
 
 	if *verbose {
