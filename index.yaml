@@ -3,6 +3,16 @@ entries:
   yqaas:
   - apiVersion: v2
     appVersion: latest
+    created: "2024-02-11T00:34:03.34964104Z"
+    description: A Helm chart for Kubernetes
+    digest: 2e9333acfbca1c93191cbd2d0eee38419d2c7c1365e438a2fc6ae5dd7cdd16bd
+    name: yqaas
+    type: application
+    urls:
+    - https://github.com/thorgull/yqaas/releases/download/yqaas-1.0.1/yqaas-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2024-02-09T21:21:23.998340358Z"
     description: A Helm chart for Kubernetes
     digest: 3d5d360a57ff03ab6002bd4a330f847ecaf24ce833417f219e2b44e466dc2fb2
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/thorgull/yqaas/releases/download/yqaas-1.0.0/yqaas-1.0.0.tgz
     version: 1.0.0
-generated: "2024-02-09T21:21:23.998346219Z"
+generated: "2024-02-11T00:34:03.349654736Z"
