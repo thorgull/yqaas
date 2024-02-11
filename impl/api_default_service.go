@@ -18,14 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package impl
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	"github.com/thorgull/yqaas/gen/api"
+	"github.com/thorgull/yqaas/jq"
 	"net/http"
-	"os/exec"
 )
 
 type DefaultAPIService struct {
@@ -63,21 +62,13 @@ func (s *DefaultAPIService) JqEvaluatePost(ctx context.Context, evaluatePostRequ
 		return api.Response(http.StatusInternalServerError, nil), fmt.Errorf("can not serialize data %w", err)
 	}
 
-	cmd := exec.CommandContext(context.Background(), "jq", evaluatePostRequest.Expression)
-	var output = bytes.NewBuffer(make([]byte, 0))
-	cmd.Stdin = bytes.NewReader(bs)
-	cmd.Stdout = output
-
-	if cmd.Start() != nil {
-		return api.Response(http.StatusInternalServerError, nil), fmt.Errorf("error while starting jq : %w", err)
-	}
-
-	if cmd.Wait() != nil {
-		return api.Response(http.StatusInternalServerError, nil), fmt.Errorf("jq returned error : %w", err)
+	response, err := jq.NewJQCommand().Evaluate(evaluatePostRequest.Expression, bs)
+	if err != nil {
+		return api.Response(http.StatusInternalServerError, nil), err
 	}
 
 	var result any
-	if json.Unmarshal(output.Bytes(), &result) != nil {
+	if json.Unmarshal(response, &result) != nil {
 		return api.Response(http.StatusInternalServerError, nil), fmt.Errorf("can not serialize jq output : %w", err)
 	}
 

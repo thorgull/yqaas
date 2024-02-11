@@ -13,6 +13,7 @@ RUN go install golang.org/x/tools/cmd/goimports@latest
 WORKDIR /go/src
 COPY --from=openapi-generator /home/gen ./gen
 COPY impl ./impl
+COPY jq ./jq
 COPY main.go .
 COPY go.mod .
 COPY go.sum .

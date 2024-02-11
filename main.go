@@ -18,16 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/thorgull/yqaas/gen/api"
 	"github.com/thorgull/yqaas/impl"
+	"github.com/thorgull/yqaas/jq"
 	"gopkg.in/op/go-logging.v1"
-	"os/exec"
 	"runtime/debug"
 	"strings"
 
@@ -52,24 +50,12 @@ func findYQVersion() (string, bool) {
 	return "", false
 }
 
-func findJQVersion() (string, bool) {
-	cmd := exec.CommandContext(context.Background(), "jq", "--version")
-	var output = bytes.NewBufferString("")
-	cmd.Stdout = output
-	err := cmd.Run()
-	if err != nil {
-		return "", false
-	}
-
-	return strings.TrimPrefix(strings.TrimSuffix(output.String(), "\n"), "jq-"), true
-}
-
 func getVersionInfo() map[string]string {
 	var data = make(map[string]string)
 	if yqVersion, ok := findYQVersion(); ok {
 		data["yq"] = yqVersion
 	}
-	if jqVersion, ok := findJQVersion(); ok {
+	if jqVersion, ok := jq.NewJQCommand().Version(); ok {
 		data["jq"] = jqVersion
 	}
 	return data
