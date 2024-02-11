@@ -1,0 +1,29 @@
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: yqaas
+build:
+  artifacts:
+    - image: ghcr.io/thorgull/yqaas
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: yqaas
+        chartPath: charts/yqaas
+        setValueTemplates:
+          image.repository: "{{.IMAGE_REPO_ghcr_io_thorgull_yqaas}}"
+          image.tag: "{{.IMAGE_TAG_ghcr_io_thorgull_yqaas}}"
+        setValues:
+          image.pullPolicy: "IfNotPresent"
+        version: 1.0.0
+    hooks:
+      after:
+        - host:
+            command: [ "helm", "test", "yqaas"]
+portForward:
+  - localPort: 8080
+    port: 80
+    resourceType: Service
+    resourceName: yqaas
