@@ -1,0 +1,27 @@
+###
+POST {{baseUrl}}/jq/evaluate
+Content-Type: application/json
+
+{
+  "data": [
+    { "login": "user1", "email":  "user1@domain.priv" },
+    { "login": "user2", "email":  "user2@domain.priv" }
+  ],
+  "expression": "[ .[] | { \"value\": .login, label: .email } ]"
+}
+
+> {%
+    client.test("Request successfully", function () {
+        client.assert(response.status == 200, "Response status is not 200")
+    })
+    client.test("Check request body", function () {
+        client.assert(response.body[0].value == "user1", "value of first record should be user1")
+        client.assert(response.body[1].value == "user2", "value of first record should be user2")
+        client.assert(response.body[0].label == "user1@domain.priv", "label of first record should be user1@domain.priv")
+        client.assert(response.body[1].label == "user2@domain.priv", "label of first record should be user2@domain.priv")
+    })
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}

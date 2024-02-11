@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	"github.com/thorgull/yqaas/gen/api"
+	"github.com/thorgull/yqaas/jq"
 	"net/http"
 )
 
@@ -50,5 +51,27 @@ func (s *DefaultAPIService) EvaluatePost(_ context.Context, evaluatePostRequest 
 	}
 
 	return collector.Response(), nil
+
+}
+
+func (s *DefaultAPIService) JqEvaluatePost(ctx context.Context, evaluatePostRequest api.EvaluatePostRequest) (api.ImplResponse, error) {
+
+	bs, err := json.Marshal(evaluatePostRequest.Data)
+
+	if err != nil {
+		return api.Response(http.StatusInternalServerError, nil), fmt.Errorf("can not serialize data %w", err)
+	}
+
+	response, err := jq.NewJQCommand().Evaluate(evaluatePostRequest.Expression, bs)
+	if err != nil {
+		return api.Response(http.StatusInternalServerError, nil), err
+	}
+
+	var result any
+	if json.Unmarshal(response, &result) != nil {
+		return api.Response(http.StatusInternalServerError, nil), fmt.Errorf("can not serialize jq output : %w", err)
+	}
+
+	return api.Response(200, result), nil
 
 }

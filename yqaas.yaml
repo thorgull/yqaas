@@ -26,4 +26,23 @@ paths:
               schema: {}
         404:
           description: No result
-
+  /jq/evaluate:
+    post:
+      summary: evaluate jq expression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expression:
+                  type: string
+                data: {}
+      responses:
+        200:
+          description: Successful
+          content:
+            application/json:
+              schema: {}
+        404:
+          description: No result

@@ -24,6 +24,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/thorgull/yqaas/gen/api"
 	"github.com/thorgull/yqaas/impl"
+	"github.com/thorgull/yqaas/jq"
 	"gopkg.in/op/go-logging.v1"
 	"runtime/debug"
 	"strings"
@@ -53,6 +54,9 @@ func getVersionInfo() map[string]string {
 	var data = make(map[string]string)
 	if yqVersion, ok := findYQVersion(); ok {
 		data["yq"] = yqVersion
+	}
+	if jqVersion, ok := jq.NewJQCommand().Version(); ok {
+		data["jq"] = jqVersion
 	}
 	return data
 }

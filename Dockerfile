@@ -13,6 +13,7 @@ RUN go install golang.org/x/tools/cmd/goimports@latest
 WORKDIR /go/src
 COPY --from=openapi-generator /home/gen ./gen
 COPY impl ./impl
+COPY jq ./jq
 COPY main.go .
 COPY go.mod .
 COPY go.sum .
@@ -29,8 +30,10 @@ LABEL org.opencontainers.image.url="https://github.com/thorgull/yqaas"
 LABEL org.opencontainers.image.source="https://github.com/thorgull/yqaas"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
 LABEL org.opencontainers.image.title="YQ As A Service"
-
+WORKDIR /
+COPY --from=ghcr.io/jqlang/jq /jq ./
 COPY --from=build /go/src/yqaas ./
 COPY yqaas.yaml ./
 EXPOSE 8080/tcp
+ENV PATH=/
 ENTRYPOINT ["./yqaas"]
