@@ -12,5 +12,6 @@ GET {{baseUrl}}/buildInfo
     client.test("Check request body", function () {
         client.assert(response.body.hasOwnProperty("versions"), "should have a versions property")
         client.assert(response.body.versions.hasOwnProperty("yq"), "version of yq is available")
+        client.assert(response.body.versions.hasOwnProperty("jq"), "version of jq is available")
     })
 %}
